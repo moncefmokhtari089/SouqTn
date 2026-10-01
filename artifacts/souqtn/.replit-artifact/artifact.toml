@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "SouqTN"
+description = "A French-first social marketplace for Tunisia, bringing together community listings, auctions, and live shopping with prices in Tunisian dinars."
+version = "1.0.0"
+id = "artifacts/souqtn"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21366
+
+[services.development]
+run = "pnpm --filter @workspace/souqtn run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/souqtn", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/souqtn/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21366"
+BASE_PATH = "/"
