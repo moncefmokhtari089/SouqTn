@@ -59,6 +59,9 @@ function friendlyError(error: unknown): Error {
   if (/invalid email|email address is invalid|unable to validate email/.test(message)) {
     return new Error('Veuillez saisir une adresse e-mail valide.');
   }
+  if (/profiles_username_key|username.*already|duplicate key.*username/.test(message)) {
+    return new Error('Ce nom d’utilisateur est déjà pris.');
+  }
   if (/already registered|user already exists|email.*already|duplicate key/.test(message)) {
     return new Error('Un compte existe déjà avec cette adresse e-mail.');
   }
@@ -110,25 +113,39 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
   const sessionRef = useRef<Session | null>(null);
+  const profileRequests = useRef(new Map<string, Promise<SupabaseProfile>>());
 
   const fetchProfile = useCallback(async (user: User): Promise<SupabaseProfile> => {
-    const client = requireClient();
-    const { data, error } = await client
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle();
-    if (error) throw friendlyError(error);
-    if (data) return data as SupabaseProfile;
+    const pending = profileRequests.current.get(user.id);
+    if (pending) return pending;
 
-    const { data: created, error: upsertError } = await client
-      .from('profiles')
-      .upsert({ id: user.id, ...profileFromUser(user) }, { onConflict: 'id' })
-      .eq('id', user.id)
-      .select('*')
-      .single();
-    if (upsertError) throw friendlyError(upsertError);
-    return created as SupabaseProfile;
+    const request = (async () => {
+      const client = requireClient();
+      const { data, error } = await client
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (error) throw friendlyError(error);
+      if (data) return data as SupabaseProfile;
+
+      const { data: created, error: upsertError } = await client
+        .from('profiles')
+        .upsert({ id: user.id, ...profileFromUser(user) }, { onConflict: 'id' })
+        .eq('id', user.id)
+        .select('*')
+        .single();
+      if (upsertError) throw friendlyError(upsertError);
+      return created as SupabaseProfile;
+    })();
+    profileRequests.current.set(user.id, request);
+    try {
+      return await request;
+    } finally {
+      if (profileRequests.current.get(user.id) === request) {
+        profileRequests.current.delete(user.id);
+      }
+    }
   }, []);
 
   const refreshProfile = useCallback(async () => {
@@ -269,9 +286,10 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       if (!currentSession?.user) throw new Error('Connectez-vous pour modifier votre profil.');
       try {
         const client = requireClient();
+        await fetchProfile(currentSession.user);
         const { data, error } = await client
           .from('profiles')
-          .upsert({ id: currentSession.user.id, ...partial }, { onConflict: 'id' })
+          .update(partial)
           .eq('id', currentSession.user.id)
           .select('*')
           .single();
@@ -284,7 +302,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
         throw friendlyError(error);
       }
     },
-    [],
+    [fetchProfile],
   );
 
   const uploadAvatar = useCallback(
