@@ -38,7 +38,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Supabase’s existing `auth.users` trigger creates rows in `public.profiles`; client code must read the existing row and must not insert or upsert profiles.
 
 ## Pointers
 
