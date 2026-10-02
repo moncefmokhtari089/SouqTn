@@ -15,7 +15,7 @@ import {
   supabaseConfigured,
   supabaseConfigError,
 } from '@/lib/supabase';
-import type { ProfileInput, SupabaseProfile } from '@/lib/supabase';
+import type { SupabaseProfile } from '@/lib/supabase';
 
 type SignUpInput = {
   email: string;
@@ -82,31 +82,6 @@ function requireClient() {
   return supabase;
 }
 
-function defaultUsername(user: User): string {
-  const metadataUsername = user.user_metadata?.username;
-  if (typeof metadataUsername === 'string' && metadataUsername.trim()) {
-    return metadataUsername.trim();
-  }
-  const emailPrefix = user.email?.split('@')[0]?.replace(/[^a-zA-Z0-9_-]/g, '');
-  return emailPrefix || `membre-${user.id.slice(0, 8)}`;
-}
-
-function profileFromUser(user: User): ProfileInput {
-  const metadata = user.user_metadata ?? {};
-  const fullName =
-    typeof metadata.full_name === 'string' && metadata.full_name.trim()
-      ? metadata.full_name.trim()
-      : user.email?.split('@')[0] || 'Membre SouqTN';
-  return {
-    username: defaultUsername(user),
-    full_name: fullName,
-    phone: typeof metadata.phone === 'string' ? metadata.phone : null,
-    location: typeof metadata.location === 'string' ? metadata.location : null,
-    avatar_url: null,
-    bio: null,
-  };
-}
-
 export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<SupabaseProfile | null>(null);
@@ -127,16 +102,12 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
         .eq('id', user.id)
         .maybeSingle();
       if (error) throw friendlyError(error);
-      if (data) return data as SupabaseProfile;
-
-      const { data: created, error: upsertError } = await client
-        .from('profiles')
-        .upsert({ id: user.id, ...profileFromUser(user) }, { onConflict: 'id' })
-        .eq('id', user.id)
-        .select('*')
-        .single();
-      if (upsertError) throw friendlyError(upsertError);
-      return created as SupabaseProfile;
+      if (!data) {
+        throw new Error(
+          'Votre profil est introuvable. Vérifiez que le déclencheur Supabase crée bien la ligne dans public.profiles.',
+        );
+      }
+      return data as SupabaseProfile;
     })();
     profileRequests.current.set(user.id, request);
     try {
