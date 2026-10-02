@@ -1,0 +1,142 @@
+Continue building SouqTN from the current working state.
+
+IMPORTANT:
+
+* Keep the existing UI, layout, navigation, colors, cards and overall design exactly as they are.
+* Do not rebuild or redesign the existing pages.
+* Supabase Auth is already working and verified.
+* Use the existing Supabase project and existing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY secrets.
+* Do not use service_role or secret keys in the browser.
+* Do not create duplicate profiles.
+* Do not change the existing authentication flow.
+
+TASK: Build the first real marketplace functionality.
+
+1. LISTINGS DATABASE
+    Create the necessary Supabase database structure for marketplace listings:
+
+* id
+* seller_id linked to auth.users
+* title
+* description
+* price
+* category
+* condition
+* location
+* images
+* status
+* created_at
+* updated_at
+
+Add appropriate Row Level Security policies:
+
+* Anyone can view active listings.
+* Authenticated users can create their own listings.
+* Sellers can update and delete only their own listings.
+* Users cannot modify another seller’s listings.
+
+2. SELL / ADD PRODUCT
+    Connect the existing Sell / Add Product interface to Supabase.
+
+The seller should be able to:
+
+* Upload product photos
+* Enter title
+* Description
+* Price
+* Category
+* Condition
+* Location
+* Publish the listing
+
+Use Supabase Storage for listing images.
+
+After publishing:
+
+* Save the listing in Supabase.
+* Upload and associate its images.
+* Show a success state.
+* Redirect to the product/listing page or Market.
+
+3. MARKET
+    Connect the existing Market page to the real Supabase listings.
+
+Show:
+
+* Product image
+* Title
+* Price
+* Location
+* Condition
+* Seller information
+* Creation date
+
+Only show active listings.
+
+Add working:
+
+* Search
+* Category filtering
+* Price filtering if the existing UI supports it
+* Product detail page
+
+4. PRODUCT DETAIL
+    Connect the existing product detail page to the selected listing.
+
+Show:
+
+* Images
+* Title
+* Price
+* Description
+* Category
+* Condition
+* Location
+* Seller profile
+
+Keep Buy Now, Make Offer and Message Seller UI available, but do not implement payments/orders/offers yet unless already implemented.
+
+5. ACTUALITÉ
+    Connect the existing Actualité feed to real listings.
+
+When a new listing is published, it should appear automatically at the top of Actualité.
+
+Use the listing creation time for ordering.
+
+6. SECURITY
+
+* Respect Supabase RLS.
+* Never expose service_role/secret keys.
+* Never allow a user to create/update/delete another user’s listing.
+* Validate required fields.
+* Validate image uploads and reasonable file sizes.
+* Do not store unnecessary personal information.
+
+7. TESTING
+    Test the complete flow with the existing authenticated test account:
+
+Login
+→ Sell
+→ Create listing
+→ Upload image
+→ Publish
+→ Listing appears in Market
+→ Listing appears in Actualité
+→ Open listing detail
+→ Logout
+→ Confirm public listing remains visible
+
+Do not register a new account.
+
+Before making database changes, inspect the existing project/database and reuse existing tables if they already exist. Avoid duplicate tables or migrations.
+
+When finished, report:
+
+* Database tables/migrations created
+* Storage bucket created
+* RLS policies created
+* Features completed
+* Test results
+* Any remaining issue
+
+Do not change the existing UI design.
