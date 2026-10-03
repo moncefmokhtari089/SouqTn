@@ -1,0 +1,9 @@
+[
+ {"capability":"code/UI","source":"artifacts/souqtn (React+wouter)","outcome":"migrated to TanStack Start shell","status":"done","next_action":null},
+ {"capability":"schema","source":"supabase migrations (profiles, listings)","outcome":"recreated in Lovable Cloud","status":"done","next_action":null},
+ {"capability":"records","source":"Supabase/Replit DB","outcome":"migrate","status":"pending","next_action":"user to export listings/profiles CSV"},
+ {"capability":"auth users","source":"Supabase auth","outcome":"migrate","status":"pending","next_action":"user export; first-login verification + new password"},
+ {"capability":"file storage","source":"souqtn-avatars, souqtn-listings","outcome":"private buckets + signed URLs (public buckets blocked by workspace)","status":"done","next_action":"photo files need separate export"},
+ {"capability":"api-server (Express health only)","source":"artifacts/api-server","outcome":"dropped, no product logic","status":"accepted","next_action":null},
+ {"capability":"verification","source":"-","outcome":"pages + sign-up request verified; signed-in listing creation not verified","status":"pending","next_action":"first real account"}
+]
