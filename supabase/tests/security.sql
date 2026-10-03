@@ -121,7 +121,41 @@ select tsec.expect_eq('flag recorded once', (select count(*) from public.payment
 select tsec.expect_fail('refund_pending can never return to paid',
   $q$update public.orders set payment_status = 'paid'$q$);
 
--- 5. MESSAGING ----------------------------------------------------------------
+-- 5. WALLET PURCHASE / PAYMENT REGRESSION -----------------------------------
+select tsec.as_admin();
+insert into public.listings (id, seller_id, title, description, price, category, condition, location, images, status)
+  values ('10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-0000000000a1',
+          'Wallet item', 'Description long enough', 7, 'cat', 'Neuf', 'Tunis',
+          array['00000000-0000-0000-0000-0000000000a1/l4/a.jpg'], 'active');
+select tsec.as_service();
+select tsec.expect_ok('service credits buyer wallet',
+  $q$select public.record_wallet_deposit('00000000-0000-0000-0000-0000000000c1', 20, 'security-wallet-0001')$q$);
+select tsec.act_as('00000000-0000-0000-0000-0000000000c1');
+select tsec.expect_ok('wallet purchase succeeds and applies payment',
+  $q$select public.create_order('10000000-0000-0000-0000-000000000004', 'wallet', 'Buyer C', '20000000', '1 rue Test', 'Tunis', null, 'wallet-order-0001')$q$);
+select tsec.as_admin();
+select tsec.expect_eq('wallet order payment is paid',
+  (select payment_status from public.orders where idempotency_key = 'wallet-order-0001'), 'paid');
+select tsec.expect_eq('wallet sale proceeds link to order',
+  (select count(*) from public.wallet_transactions wt join public.orders o on o.id = wt.order_id
+   where o.idempotency_key = 'wallet-order-0001' and wt.type = 'sale_proceeds' and wt.order_id is not null)::text, '1');
+select tsec.expect_eq('wallet sale proceeds start pending',
+  (select wt.status from public.wallet_transactions wt join public.orders o on o.id = wt.order_id
+   where o.idempotency_key = 'wallet-order-0001' and wt.type = 'sale_proceeds'), 'pending');
+select tsec.act_as('00000000-0000-0000-0000-0000000000a1');
+select tsec.expect_ok('seller processes confirmed wallet order',
+  $q$select public.update_order_status((select id from public.orders where idempotency_key = 'wallet-order-0001'), 'processing')$q$);
+select tsec.expect_ok('seller ships wallet order',
+  $q$select public.update_order_status((select id from public.orders where idempotency_key = 'wallet-order-0001'), 'shipped')$q$);
+select tsec.act_as('00000000-0000-0000-0000-0000000000c1');
+select tsec.expect_ok('buyer receives wallet order',
+  $q$select public.update_order_status((select id from public.orders where idempotency_key = 'wallet-order-0001'), 'delivered')$q$);
+select tsec.as_admin();
+select tsec.expect_eq('wallet sale proceeds complete on delivery',
+  (select wt.status from public.wallet_transactions wt join public.orders o on o.id = wt.order_id
+   where o.idempotency_key = 'wallet-order-0001' and wt.type = 'sale_proceeds'), 'completed');
+
+-- 6. MESSAGING ----------------------------------------------------------------
 select tsec.act_as('00000000-0000-0000-0000-0000000000c1');
 select tsec.expect_ok('buyer opens a conversation',
   $q$select public.start_conversation('10000000-0000-0000-0000-000000000001')$q$);

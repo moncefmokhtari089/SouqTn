@@ -4,7 +4,10 @@ import { describe, expect, it } from "vitest";
 
 // STATIC checks on the SQL text. They guard against accidental regressions of the
 // hardening but do NOT execute SQL: behaviour is verified by supabase/tests/security.sql.
-const sql = readFileSync(path.resolve(__dirname, "../../drizzle/migrations/0003_security_hardening.sql"), "utf8");
+const sql = readFileSync(
+  path.resolve(__dirname, "../../drizzle/migrations/0003_security_hardening.sql"),
+  "utf8",
+);
 const gitignore = readFileSync(path.resolve(__dirname, "../../.gitignore"), "utf8");
 
 describe("0003 security hardening (static)", () => {
@@ -16,10 +19,18 @@ describe("0003 security hardening (static)", () => {
   });
 
   it("restricts expire_unpaid_orders and settle_payment to service_role", () => {
-    expect(sql).toMatch(/revoke all on function public\.expire_unpaid_orders\(integer\) from public, anon, authenticated/);
-    expect(sql).toMatch(/grant execute on function public\.expire_unpaid_orders\(integer\) to service_role/);
-    expect(sql).toMatch(/grant execute on function public\.settle_payment\(text, text, text, jsonb\) to service_role/);
-    expect(sql).not.toMatch(/grant execute on function public\.(expire_unpaid_orders|settle_payment)[^;]*authenticated;/);
+    expect(sql).toMatch(
+      /revoke all on function public\.expire_unpaid_orders\(integer\) from public, anon, authenticated/,
+    );
+    expect(sql).toMatch(
+      /grant execute on function public\.expire_unpaid_orders\(integer\) to service_role/,
+    );
+    expect(sql).toMatch(
+      /grant execute on function public\.settle_payment\(text, text, text, jsonb\) to service_role/,
+    );
+    expect(sql).not.toMatch(
+      /grant execute on function public\.(expire_unpaid_orders|settle_payment)[^;]*authenticated;/,
+    );
   });
 
   it("only expires pending online orders awaiting payment, and never paid ones", () => {

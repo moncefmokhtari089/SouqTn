@@ -23,6 +23,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuctionIdRouteImport } from './routes/auction.$id'
 import { Route as LiveIdRouteImport } from './routes/live.$id'
 import { Route as MarketIdRouteImport } from './routes/market.$id'
+import { Route as ApiPublicCronExpireOrdersRouteImport } from './routes/api/public/cron/expire-orders'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -94,6 +95,12 @@ const MarketIdRoute = MarketIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => MarketRoute,
 } as any)
+const ApiPublicCronExpireOrdersRoute =
+  ApiPublicCronExpireOrdersRouteImport.update({
+    id: '/api/public/cron/expire-orders',
+    path: '/api/public/cron/expire-orders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/auction/$id': typeof AuctionIdRoute
   '/live/$id': typeof LiveIdRoute
   '/market/$id': typeof MarketIdRoute
+  '/api/public/cron/expire-orders': typeof ApiPublicCronExpireOrdersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -126,6 +134,7 @@ export interface FileRoutesByTo {
   '/auction/$id': typeof AuctionIdRoute
   '/live/$id': typeof LiveIdRoute
   '/market/$id': typeof MarketIdRoute
+  '/api/public/cron/expire-orders': typeof ApiPublicCronExpireOrdersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -143,6 +152,7 @@ export interface FileRoutesById {
   '/auction/$id': typeof AuctionIdRoute
   '/live/$id': typeof LiveIdRoute
   '/market/$id': typeof MarketIdRoute
+  '/api/public/cron/expire-orders': typeof ApiPublicCronExpireOrdersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/auction/$id'
     | '/live/$id'
     | '/market/$id'
+    | '/api/public/cron/expire-orders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/auction/$id'
     | '/live/$id'
     | '/market/$id'
+    | '/api/public/cron/expire-orders'
   id:
     | '__root__'
     | '/'
@@ -193,6 +205,7 @@ export interface FileRouteTypes {
     | '/auction/$id'
     | '/live/$id'
     | '/market/$id'
+    | '/api/public/cron/expire-orders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -207,6 +220,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicCronExpireOrdersRoute: typeof ApiPublicCronExpireOrdersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -309,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketIdRouteImport
       parentRoute: typeof MarketRoute
     }
+    '/api/public/cron/expire-orders': {
+      id: '/api/public/cron/expire-orders'
+      path: '/api/public/cron/expire-orders'
+      fullPath: '/api/public/cron/expire-orders'
+      preLoaderRoute: typeof ApiPublicCronExpireOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -356,6 +377,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicCronExpireOrdersRoute: ApiPublicCronExpireOrdersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -3,7 +3,10 @@ import { authenticateCronRequest } from "@/integrations/supabase/cron-auth";
 export const EXPIRE_AFTER_MINUTES = 30;
 
 type RpcClient = {
-  rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: { message: string } | null }>;
+  rpc: (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => Promise<{ data: unknown; error: { message: string } | null }>;
 };
 
 /**
@@ -19,7 +22,9 @@ export async function handleExpireOrders(
   if (denied) return denied;
 
   const admin = await getAdmin();
-  const { data, error } = await admin.rpc("expire_unpaid_orders", { p_minutes: EXPIRE_AFTER_MINUTES });
+  const { data, error } = await admin.rpc("expire_unpaid_orders", {
+    p_minutes: EXPIRE_AFTER_MINUTES,
+  });
   if (error) {
     console.error("[cron] expire_unpaid_orders failed:", error.message);
     return Response.json({ ok: false }, { status: 500 });
