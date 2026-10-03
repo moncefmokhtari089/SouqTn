@@ -121,6 +121,7 @@ export function useMarketplaceListings(sellerIdentity: SellerIdentity | null) {
   const [error, setError] = useState<string | null>(null);
   const loaded = useRef(false);
   const request = useRef<Promise<void> | null>(null);
+  const revision = useRef(0);
 
   const refresh = useCallback(async () => {
     if (!supabase) {
@@ -133,6 +134,7 @@ export function useMarketplaceListings(sellerIdentity: SellerIdentity | null) {
 
     const pending = (async () => {
       if (!loaded.current) setLoading(true);
+      const startingRevision = revision.current;
       const { data, error: listingError } = await supabase
         .from('listings')
         .select('id,seller_id,title,description,price,category,condition,location,images,status,created_at,updated_at')
@@ -153,7 +155,9 @@ export function useMarketplaceListings(sellerIdentity: SellerIdentity | null) {
       }
 
       const sellerById = new Map(sellers.map((seller) => [seller.id, seller]));
-      setListings(rows.map((row) => toListing(row, sellerById.get(row.seller_id) ?? null)));
+      if (startingRevision === revision.current) {
+        setListings(rows.map((row) => toListing(row, sellerById.get(row.seller_id) ?? null)));
+      }
       setError(null);
     })();
     request.current = pending;
@@ -212,6 +216,7 @@ export function useMarketplaceListings(sellerIdentity: SellerIdentity | null) {
         if (insertError) throw insertError;
 
         const listing = toListing(data as ListingRow, sellerIdentity);
+        revision.current += 1;
         setListings((current) =>
           [listing, ...current.filter((item) => item.id !== listing.id)].sort((a, b) =>
             b.created_at.localeCompare(a.created_at),

@@ -1,0 +1,59 @@
+Continue the SouqTN listings integration from exactly where you stopped.
+
+The data layer and Supabase migration are already completed. Do NOT recreate or modify the existing database migration unless a real error requires it.
+
+Continue wiring the existing UI to real Supabase listings:
+
+1. Market
+
+* Load real active listings from Supabase.
+* Keep the existing Market design unchanged.
+* Search and existing filters should work with real listings where already supported.
+
+2. Actualité / Feed
+
+* Load real listings from Supabase, newest first.
+* Keep the existing feed design unchanged.
+* Do not show demo auction/live items as marketplace listings.
+
+3. Product Detail
+
+* Open the selected real listing from Supabase.
+* Display its real title, price, description, images, seller and location.
+* Keep the existing design unchanged.
+
+4. Sell / Add Product
+
+* Connect the existing Sell form to Supabase.
+* Authenticated users can create their own listing.
+* Upload listing images using the existing Supabase Storage setup if already available.
+* After publishing, the new listing must appear in Market and Actualité.
+
+5. Security
+
+* Respect the existing Supabase RLS policies.
+* A user can only create/update/delete their own listings.
+* Public users can view active listings.
+* Never expose service_role or private Supabase keys in frontend code.
+
+6. Keep these separate
+
+* Auction demo data remains demo-only.
+* Live demo data remains demo-only.
+* Do not convert auction/live demo records into marketplace inventory.
+
+7. Testing
+    Test this complete flow:
+    Login → Sell → Create listing → Upload image → Publish → Market → Actualité → Product Detail → Logout → verify the listing remains publicly visible.
+
+Do not redesign the UI.
+Do not create duplicate tables.
+Do not create duplicate migrations.
+Reuse the existing SouqTN structure and continue from the current implementation.
+
+When finished, report:
+
+* what was implemented
+* what was tested
+* any remaining issue
+* whether the build/typecheck passes
