@@ -1,6 +1,6 @@
-# SouqTN Marketplace (36)
+# ELmarchii Marketplace (36)
 
-Souqtn : projet marketplace tunisienne importé depuis Replit et GitHub (https://github.com/moncefmokhtari089/SouqTn.git). Reprendre le code existant dans l'archive jointe et continuer le développement.
+ELmarchii : projet marketplace tunisienne importé depuis Replit et GitHub (https://github.com/moncefmokhtari089/SouqTn.git). Reprendre le code existant dans l'archive jointe et continuer le développement.
 
 This project was built with [Lovable](https://lovable.dev).
 

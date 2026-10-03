@@ -106,7 +106,7 @@ export function AuthPage({ mode }: AuthPageProps) {
         }
         setSuccess(
           hasSession
-            ? 'Votre compte est créé. Bienvenue sur SouqTN !'
+            ? 'Votre compte est créé. Bienvenue sur ELmarchii !'
             : 'Votre compte est prêt. Confirmez votre adresse e-mail pour terminer l’inscription. Vous pourrez ajouter votre photo depuis votre profil.',
         );
         if (hasSession) navigate('/profile');
@@ -126,7 +126,7 @@ export function AuthPage({ mode }: AuthPageProps) {
   }
 
   const title = isRegister
-    ? 'Rejoignez SouqTN'
+    ? 'Rejoignez ELmarchii'
     : isForgot
       ? 'Mot de passe oublié'
       : isReset

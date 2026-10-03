@@ -47,7 +47,7 @@ const METHOD: Record<string, string> = {
   d17: 'D17',
   flouci: 'Flouci Wallet',
   cod: 'Paiement à la livraison',
-  wallet: 'SouqTN Wallet',
+  wallet: 'ELmarchii Wallet',
 };
 
 function Avatar({ name, url }: { name: string; url?: string | null | undefined }) {
@@ -244,7 +244,7 @@ export function CheckoutDialog({
       <section className="modal-card" onClick={(e) => e.stopPropagation()}>
         <div className="mb-5 flex items-start justify-between">
           <div>
-            <div className="eyebrow">SouqTN · commande</div>
+            <div className="eyebrow">ELmarchii · commande</div>
             <h2 className="display mt-1 text-2xl font-extrabold">Acheter</h2>
           </div>
           <button className="icon-btn" onClick={onClose} aria-label="Fermer">
@@ -310,7 +310,7 @@ export function CheckoutDialog({
           <button className="btn-primary w-full" disabled={busy} data-testid="button-confirm-order">
             {busy ? 'Création…' : method === 'cod' ? 'Commander · payer à la livraison' : `Payer ${money(listing.priceTnd)}`}
           </button>
-          <p className="text-center text-[10px] text-[#9a8e7d]">SouqTN n’enregistre jamais vos données de carte ni vos identifiants de paiement.</p>
+          <p className="text-center text-[10px] text-[#9a8e7d]">ELmarchii n’enregistre jamais vos données de carte ni vos identifiants de paiement.</p>
         </form>
       </section>
     </div>

@@ -72,7 +72,7 @@ export function ProfileEditDialog({ open, onClose }: ProfileEditDialogProps) {
       <section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="profile-edit-title">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <p className="eyebrow mb-2">Votre espace SouqTN</p>
+            <p className="eyebrow mb-2">Votre espace ELmarchii</p>
             <h2 className="display text-2xl font-extrabold text-[#203b37]" id="profile-edit-title">Modifier le profil</h2>
           </div>
           <button className="icon-btn" type="button" aria-label="Fermer" onClick={onClose} disabled={busy} data-testid="button-close-profile-dialog">×</button>
