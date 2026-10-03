@@ -1,6 +1,6 @@
 # SECURITY.md — SouqTN hardening (migration 0003)
 
-Status: **written and reviewed statically. Nothing was executed**: no Postgres, no network, no `node_modules` in the authoring sandbox (no build, no vitest, no SQL run). Apply on a staging branch first, then run the checks below.
+Status: **verified locally on branch `security-0003`**. Migrations 0000 through 0003 and the SQL security suite were executed against an isolated PostgreSQL 16.15 database with local Supabase-compatible auth/storage stubs; no production database or secrets were used. The application build and unit tests also passed. Full-project lint remains blocked by pre-existing formatting debt outside the targeted security files.
 
 ## What 0003 changes
 | Area | Change |
@@ -39,5 +39,8 @@ No hard-coded secret found (only publishable Supabase keys in `.env`, which may 
 Verified by reading: listings update/delete only own rows (+ new trigger); `seller_id` immutable for clients; orders/transactions/wallet tables are SELECT-only for clients; messages insert requires `sender_id = auth.uid()` and participation; profiles/wallet/payment data owner- or party-scoped; public seller data only via `get_public_profiles` / `get_public_sellers`. Nothing was weakened.
 
 ## Tests
-- `supabase/tests/security.sql` — DB behaviour (sold revive, mark sold, foreign listing, seller_id, money-table writes, service-role-only RPCs, expiry + idempotence, late payment, sender spoofing, message flood, conversation limit, storage rejections). Rolled back at the end. **Not yet run.**
-- `src/test/expire-orders-handler.test.ts`, `src/test/security-migration.test.ts` — `npm test`. **Not yet run.** The second is static text matching only.
+- `supabase/tests/security.sql` — **passed**: 50 PASS notices, 0 FAIL notices. Covers sold-listing protection, money-table writes, service-role-only RPCs, expiry/idempotence, late payment, wallet purchase proceeds linked by `order_id`, delivery completion, sender spoofing, message flood, conversation limits, and storage rejections. Rolled back at the end.
+- Additional rolled-back flow check — **passed** for client listing creation/editing, `start_conversation`, messages, COD order/status/payment, wallet purchase, card settlement with the provider enabled, and `request_withdrawal`.
+- `src/test/expire-orders-handler.test.ts`, `src/test/security-migration.test.ts`, `src/test/app-routing.test.tsx` — `npm test`: **13 passed, 0 failed**.
+- `npm run build` — **passed**; the cron route was included in `src/routeTree.gen.ts`.
+- `npm run lint` — **not clean**: 1,395 errors and 12 warnings, predominantly existing Prettier violations across the submitted application. The targeted newly added security files pass ESLint after formatting.
