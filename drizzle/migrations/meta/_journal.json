@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791048407952,
+      "tag": "0000_souqtn_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791049150312,
+      "tag": "0001_public_profiles_favorites_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791051250919,
+      "tag": "0002_messaging_orders_payments_wallet",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791100000000,
+      "tag": "0003_security_hardening",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791120325000,
+      "tag": "0004_rebrand",
+      "breakpoints": true
+    }
+  ]
+}
